@@ -1,5 +1,11 @@
 import streamlit as st
+import os
+import torch
 from main import process_uploaded_file, process_youtube_url
+
+# Disable torch's default multi-threading to avoid event loop conflicts
+torch.set_num_threads(1)
+os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 st.set_page_config(page_title="🎬 Multimodal Transcriber", layout="wide")
 st.title("🎥 YouTube & Video Multimodal Transcriber")
@@ -36,6 +42,27 @@ if video_path:
         results = process_uploaded_file(video_path)
         st.success("✅ Transcript with visuals ready!")
 
-        for r in results:
-            st.image(r["image"], caption=f"{r['keyword']} @ {r['timestamp']:.2f}s")
-            st.markdown(f"**Transcript:** {r['text']}")
+        # Display summary and metadata
+        st.header("📝 Summary")
+        st.write(results['summary'])
+        
+        st.markdown("---")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Language", results['language'].upper())
+        with col2:
+            st.metric("Duration", f"{results['total_duration']:.2f}s")
+        with col3:
+            st.metric("Segments", len(results['segments']))
+
+        # Display detailed segments
+        st.header("🎬 Detailed Transcript")
+        for segment in results['segments']:
+            with st.expander(f"Segment {segment['start_time']:.2f}s - {segment['end_time']:.2f}s"):
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.image(segment["image"])
+                with col2:
+                    st.markdown(f"**Text:** {segment['text']}")
+                    st.markdown(f"**Keywords:** {', '.join(segment['keywords'])}")
+                    st.progress(segment['confidence'])
