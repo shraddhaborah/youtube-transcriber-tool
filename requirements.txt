@@ -1,11 +1,22 @@
-streamlit==1.31.1
+# Core dependencies
+streamlit==1.27.2
 pytube==15.0.0
-openai-whisper==20231117
+whisper-openai==20231117
 ffmpeg-python==0.2.0
 opencv-python-headless==4.7.0.72
+
+# NLP and ML dependencies
 keybert==0.7.0
-torch==2.1.2
-tqdm==4.65.0
-transformers==4.36.2
-scikit-learn==1.3.2
+torch==2.0.1
+transformers==4.31.0
+scikit-learn==1.3.0
 sentence-transformers==2.2.2
+
+# Required by streamlit
+rich==13.5.2
+markdown-it-py==3.0.0
+mdurl==0.1.2
+pygments==2.16.1
+tqdm==4.65.0
+typing-extensions==4.7.1
+protobuf==4.24.3
