@@ -1,11 +1,16 @@
 [build]
-command = "python -m pip install --upgrade pip && pip install -r requirements-deploy.txt && streamlit run app.py"
+command = "pip install -r requirements-deploy.txt"
 publish = "public"
 
 [build.environment]
 PYTHON_VERSION = "3.9"
+NODE_VERSION = "16"
+
+[[plugins]]
+package = "@netlify/plugin-python"
 
 [[redirects]]
 from = "/*"
 to = "/"
 status = 200
+force = true
