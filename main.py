@@ -1,3 +1,7 @@
+# Copyright (c) 2025 Shraddha Borah
+# All rights reserved. This file is part of a proprietary software project.
+# Unauthorized use or distribution is prohibited.
+
 import os
 import tempfile
 from pytube import YouTube
@@ -45,18 +49,25 @@ def extract_audio(video_path):
 def transcribe_audio(audio_path):
     model = whisper.load_model("base")
     result = model.transcribe(audio_path)
-    return result['segments']
+    # Return both segments and the full text
+    return {
+        'segments': result['segments'],
+        'full_text': result['text'],
+        'language': result.get('language', 'unknown')
+    }
 
 def extract_keywords(segments):
     kw_model = KeyBERT()
     key_segments = []
     for segment in segments:
-        keywords = kw_model.extract_keywords(segment['text'], top_n=1)
+        keywords = kw_model.extract_keywords(segment['text'], top_n=3)
         if keywords:
             key_segments.append({
-                "timestamp": segment['start'],
+                "start_time": segment['start'],
+                "end_time": segment.get('end', segment['start'] + 5),  # Default 5s if no end time
                 "text": segment['text'],
-                "keyword": keywords[0][0]
+                "keywords": [kw[0] for kw in keywords],  # Get top 3 keywords
+                "confidence": segment.get('confidence', 0.0)
             })
     return key_segments
 
@@ -72,18 +83,33 @@ def extract_frame(video_path, timestamp):
 def generate_multimodal_transcript(video_path, segments):
     enriched_output = []
     for seg in segments:
-        frame_path = extract_frame(video_path, seg["timestamp"])
+        frame_path = extract_frame(video_path, seg["start_time"])
         enriched_output.append({
-            "timestamp": seg["timestamp"],
+            "start_time": seg["start_time"],
+            "end_time": seg["end_time"],
             "text": seg["text"],
-            "keyword": seg["keyword"],
+            "keywords": seg["keywords"],
+            "confidence": seg["confidence"],
             "image": frame_path
         })
     return enriched_output
 
 def process_uploaded_file(video_path):
+    # Extract audio and transcribe
     audio_path = extract_audio(video_path)
-    segments = transcribe_audio(audio_path)
-    key_segments = extract_keywords(segments)
+    transcription = transcribe_audio(audio_path)
+    
+    # Process segments with keywords
+    key_segments = extract_keywords(transcription['segments'])
+    
+    # Generate final output with frames
     results = generate_multimodal_transcript(video_path, key_segments)
-    return results
+    
+    # Add metadata
+    return {
+        'summary': transcription['full_text'],
+        'language': transcription['language'],
+        'segments': results,
+        'total_duration': key_segments[-1]['end_time'] if key_segments else 0,
+        'processed_at': os.path.getmtime(video_path)
+    }

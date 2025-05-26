@@ -60,3 +60,13 @@ This tool is for educational/demo purposes. Please **do not use it to download c
 
 ## 👨‍💻 Author
 Made with 💡 by Shraddha Borah
+
+---
+
+## 📜 License
+
+This project is licensed under a Proprietary License.
+
+© 2025 Shraddha Borah. All rights reserved.
+
+This code is provided for demonstration purposes only. Commercial use, distribution, or modification is prohibited without explicit permission.
