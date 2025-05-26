@@ -1,11 +1,14 @@
 [build]
-command = "pip install -r requirements.txt && streamlit run app.py"
-publish = "."
+command = "python -m pip install --upgrade pip && pip install -r requirements.txt && streamlit run app.py"
+publish = "public"
 
 [build.environment]
-PYTHON_VERSION = "3.13"
+PYTHON_VERSION = "3.11"
+PIP_NO_CACHE_DIR = "off"
+NODE_VERSION = "18"
 
 [[redirects]]
 from = "/*"
-to = "/app.py"
+to = "/"
 status = 200
+force = true
