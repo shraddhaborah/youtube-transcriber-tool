@@ -20,10 +20,12 @@ def process_youtube_url(url):
         if not yt.check_availability():
             raise ValueError("This video is unavailable")
             
-        stream = yt.streams.filter(only_audio=False, file_extension='mp4').first()
+        # Get highest quality stream that includes both video and audio
+        stream = yt.streams.filter(progressive=True).order_by('resolution').desc().first()
         if not stream:
             raise ValueError("No suitable video stream found")
             
+        # Create a temporary file that will be automatically cleaned up
         temp_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
         stream.download(filename=temp_path)
         return temp_path

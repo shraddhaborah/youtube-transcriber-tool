@@ -21,19 +21,15 @@ if mode == "Upload Video File":
         video_path = "temp_uploaded_video.mp4"
 
 elif mode == "YouTube URL":
-    youtube_url = st.text_input("Paste YouTube URL:", help="Enter a valid YouTube video URL (e.g., https://www.youtube.com/watch?v=...)")
-    if st.button("Download Video"):
-        if not youtube_url:
-            st.warning("⚠️ Please enter a YouTube URL first")
-        else:
-            with st.spinner("⏳ Downloading video..."):
-                try:
-                    video_path = process_youtube_url(youtube_url)
-                    st.success("✅ YouTube video downloaded successfully!")
-                except ValueError as e:
-                    st.error(f"❌ {str(e)}")
-                except Exception as e:
-                    st.error(f"❌ An unexpected error occurred: {str(e)}")
+    youtube_url = st.text_input("Paste YouTube URL and press Enter:", help="Enter a valid YouTube video URL (e.g., https://www.youtube.com/watch?v=...)")
+    if youtube_url:
+        with st.spinner("⏳ Processing YouTube video..."):
+            try:
+                video_path = process_youtube_url(youtube_url)
+            except ValueError as e:
+                st.error(f"❌ {str(e)}")
+            except Exception as e:
+                st.error(f"❌ An unexpected error occurred: {str(e)}")
 
 if video_path:
     with st.spinner("🔍 Transcribing and analyzing the video..."):
