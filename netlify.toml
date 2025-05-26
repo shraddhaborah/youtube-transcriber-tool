@@ -1,16 +1,17 @@
 [build]
-command = "pip install -r requirements-deploy.txt"
+command = "python -m pip install --upgrade pip setuptools wheel && pip install -r requirements-minimal.txt"
 publish = "public"
 
 [build.environment]
 PYTHON_VERSION = "3.9"
-NODE_VERSION = "16"
-
-[[plugins]]
-package = "@netlify/plugin-python"
+PIP_NO_CACHE_DIR = "off"
+MAKE_OPTS = "-j4"
 
 [[redirects]]
 from = "/*"
 to = "/"
 status = 200
 force = true
+
+[functions]
+node_bundler = "esbuild"
