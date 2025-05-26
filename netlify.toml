@@ -1,17 +1,11 @@
 [build]
-command = "python -m pip install --upgrade pip setuptools wheel && pip install -r requirements-minimal.txt"
+command = "pip install -r requirements-minimal.txt && mkdir -p public && cp -r * public/ || true"
 publish = "public"
 
 [build.environment]
 PYTHON_VERSION = "3.9"
-PIP_NO_CACHE_DIR = "off"
-MAKE_OPTS = "-j4"
 
 [[redirects]]
 from = "/*"
-to = "/"
+to = "/index.html"
 status = 200
-force = true
-
-[functions]
-node_bundler = "esbuild"
